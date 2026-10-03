@@ -196,19 +196,24 @@ h1,h2,h3{margin:0;text-wrap:balance}
 .qtile .mini{width:70%;height:3px;border-radius:3px;background:rgba(236,244,230,.08);overflow:hidden}
 .qtile .mini i{display:block;height:100%;background:var(--lime);border-radius:3px;transition:width .8s var(--ease)}
 
-/* quote */
+/* logo + quote row (dashboard header) */
 .dash>*{order:5}
-.dash>.now{order:1}.dash>.ringcard{order:2}.dash>.quote{order:3}
-.quote{grid-column:span 12;display:flex;align-items:center;gap:22px;padding:22px 26px;position:relative;overflow:hidden}
-.quote .qm{font-family:var(--font-display);font-stretch:125%;font-weight:800;font-size:64px;line-height:.6;color:var(--lime);padding-top:18px;flex:none}
-.quote .qbody{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
-.quote .qtext{font-family:var(--font-display);font-stretch:112%;font-weight:650;font-size:clamp(19px,2vw,24px);line-height:1.25;text-wrap:balance;transition:opacity .55s var(--ease),filter .55s var(--ease),transform .55s var(--ease)}
-.quote .qtext.out{opacity:0;filter:blur(6px);transform:translateY(-6px)}
-.quote .qtext.pre{opacity:0;filter:blur(6px);transform:translateY(8px);transition:none}
-.quote .qmeta{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--muted);font-weight:600;font-variant-numeric:tabular-nums}
-.quote .qline{flex:none;width:72px;height:2px;border-radius:2px;background:rgba(236,244,230,.1);overflow:hidden}
-.quote .qline i{display:block;height:100%;width:100%;background:var(--lime);transform-origin:left;animation:qline 30s linear both}
+.dash>.qrow{order:0}.dash>.now{order:1}.dash>.ringcard{order:2}
+.qrow{grid-column:span 12;display:flex;align-items:center;gap:16px;min-width:0;padding:2px 2px 4px}
+.qlogo{flex:none;width:44px;height:44px;border-radius:13px;background:#000;padding:4px;border:1px solid var(--line-2);object-fit:contain}
+.qwrap{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px}
+.qtext{margin:0;font-family:var(--font-display);font-stretch:112%;font-weight:650;font-size:clamp(18px,1.9vw,23px);line-height:1.2;letter-spacing:-.005em;text-wrap:balance;overflow-wrap:anywhere;transition:opacity .55s var(--ease),filter .55s var(--ease),transform .55s var(--ease)}
+.qtext::before{content:"“";color:var(--lime);margin-right:2px}
+.qtext::after{content:"”";color:var(--lime);margin-left:1px}
+.qtext.out{opacity:0;filter:blur(6px);transform:translateY(-5px)}
+.qtext.pre{opacity:0;filter:blur(6px);transform:translateY(6px);transition:none}
+.qline{display:block;width:56px;height:2px;border-radius:2px;background:rgba(236,244,230,.1);overflow:hidden}
+.qline i{display:block;height:100%;width:100%;background:var(--lime);transform-origin:left;animation:qline 30s linear both}
 @keyframes qline{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.qrow .install{flex:none}
+.qrow .install .lbl{display:none}
+.qrow .install{width:40px;height:40px;padding:0;justify-content:center}
+@media (min-width:721px){.qrow .install{display:none}}
 /* install */
 .install{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 14px 0 12px;border-radius:999px;font-weight:700;font-size:13px;background:var(--lime-soft);color:var(--text);border:1px solid rgba(193,255,114,.3);transition:background .25s,transform .15s}
 .install:hover{background:rgba(193,255,114,.2)}
@@ -371,7 +376,6 @@ textarea.notes:focus{border-color:rgba(193,255,114,.55)}
   .side-foot{padding:6px;background:none;border:0}
   .main{padding:30px 28px 60px}
   .now,.ringcard,.activity,.quick{grid-column:span 12}
-  .dash>.quote{order:2}.dash>.ringcard{order:3}
   .stat{grid-column:span 6}
   .pcharts{grid-template-columns:1fr}
   .ex,.walk{grid-template-columns:1fr 1fr;gap:22px}
@@ -398,9 +402,12 @@ textarea.notes:focus{border-color:rgba(193,255,114,.55)}
   .now .tag{display:none}
   .clock .t{font-size:clamp(64px,22vw,96px)}
   .ringcard{padding:18px;gap:18px}
-  .quote{padding:18px;gap:14px}
-  .quote .qm{font-size:48px;padding-top:14px}
-  .quote .qtext{font-size:18px}
+  body.on-dash .mtop{display:none}
+  body.on-dash .main{padding-top:calc(14px + env(safe-area-inset-top,0px))}
+  .qrow{gap:12px;padding:0 0 4px}
+  .qlogo{width:42px;height:42px;border-radius:12px}
+  .qtext{font-size:clamp(15px,4.6vw,19px)}
+  .qline{width:44px}
   .ring{width:124px;height:124px}
   .ring .lbl b{font-size:30px}
   .ringcard .side .btn{display:none}
@@ -439,6 +446,7 @@ textarea.notes:focus{border-color:rgba(193,255,114,.55)}
   .pill{right:50%;transform:translateX(50%);bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   .toast{bottom:calc(100px + env(safe-area-inset-bottom,0px))}
 }
+@media (max-width:340px){.qlogo{display:none}}
 @media (max-width:380px){.fields{grid-template-columns:1fr}.walk .fields{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 @media (hover:none){.part:hover,.sec:hover,.qtile:hover{transform:none}}
@@ -728,12 +736,12 @@ const QUOTES = [
 const QUOTE_MS = 30000;
 const quoteIndex = () => Math.floor(Date.now() / QUOTE_MS) % QUOTES.length;
 let shownQuote = -1;
-function QuoteCard() {
+function QuoteRow() {
   shownQuote = quoteIndex();
-  const left = QUOTE_MS - (Date.now() % QUOTE_MS);
-  return `<section class="glass quote" aria-live="polite"><span class="qm" aria-hidden="true">“</span><div class="qbody">
-    <p class="qtext" data-quote style="margin:0">${esc(QUOTES[shownQuote])}</p>
-    <div class="qmeta"><span class="qline"><i data-qline style="animation-delay:-${(QUOTE_MS - left) / 1000}s"></i></span><span data-qnum>${pad(shownQuote + 1)} / ${QUOTES.length}</span></div></div></section>`;
+  const elapsed = (Date.now() % QUOTE_MS) / 1000;
+  return `<div class="qrow"><img class="qlogo" src="${ASSETS.logo}" alt="App logo">
+    <div class="qwrap" aria-live="polite"><p class="qtext" data-quote>${esc(QUOTES[shownQuote])}</p><span class="qline" aria-hidden="true"><i data-qline style="animation-delay:-${elapsed}s"></i></span></div>
+    ${isStandalone() ? "" : InstallButton("row")}</div>`;
 }
 function rotateQuote() {
   const el = document.querySelector("[data-quote]"); if (!el) return;
@@ -742,7 +750,6 @@ function rotateQuote() {
   setTimeout(() => {
     el.textContent = QUOTES[i]; el.classList.remove("out"); el.classList.add("pre");
     void el.offsetWidth; el.classList.remove("pre");
-    const n = document.querySelector("[data-qnum]"); if (n) n.textContent = `${pad(i + 1)} / ${QUOTES.length}`;
     const l = document.querySelector("[data-qline]"); if (l) { l.style.animation = "none"; void l.offsetWidth; l.style.animation = ""; l.style.animationDelay = "0s"; }
   }, 550);
 }
@@ -816,7 +823,7 @@ function PageDashboard() {
       <div class="clock"><span class="t" data-clock="time"></span><span class="ap"><b data-clock="ampm"></b><span data-clock="sec"></span></span></div>
       <div class="date-line"><span data-clock="weekday"></span> <b data-clock="date"></b></div>
     </section>
-    ${QuoteCard()}
+    ${QuoteRow()}
     ${DashboardCard("ringcard", `<div class="ring"><svg viewBox="0 0 160 160"><circle class="trk" cx="80" cy="80" r="70"/><circle class="val" cx="80" cy="80" r="70" stroke-dasharray="${C}" stroke-dashoffset="${C}" data-off="${C * (1 - pct)}"/></svg>
       <div class="lbl"><b class="num">${Math.round(pct * 100)}%</b><span>today</span></div></div>
       <div class="side"><div class="eyebrow">Today's progress</div><div class="h2">${st.done} of ${st.total} done</div><p>${st.done ? (st.remaining ? `${st.remaining} still open across your program.` : "Every exercise in the program is done.") : "Nothing logged yet. Pick a body part to begin."}</p><a class="btn lime sm" href="#program" style="align-self:flex-start">Open program ${SVG.next}</a></div>`)}
@@ -931,6 +938,7 @@ function render() {
   document.getElementById("sidebar").innerHTML = Navigation(navId);
   document.getElementById("mnav").innerHTML = MobileNavigation(navId);
   document.getElementById("mtop").innerHTML = MobileTop();
+  document.body.classList.toggle("on-dash", navId === "dashboard" && top !== "program");
   document.getElementById("view").innerHTML = html;
   renderPill();
   tick();
